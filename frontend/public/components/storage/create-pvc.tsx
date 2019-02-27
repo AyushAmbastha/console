@@ -46,11 +46,7 @@ export class CreatePVCForm extends React.Component<CreatePVCFormProps, CreatePVC
         title: 'Read Only (ROX)',
       },
     ],
-    dropdownUnits: {
-      Mi: 'MiB',
-      Gi: 'GiB',
-      Ti: 'TiB',
-    },
+    dropdownUnits: ["MiB","GiB","TiB"],
   };
 
   handleChange: React.ReactEventHandler<HTMLInputElement> = event => {
@@ -309,7 +305,7 @@ export type CreatePVCFormState = {
   requestSizeUnit: string;
   disableForm: boolean;
   accessModeRadios: { value: string, title: string }[];
-  dropdownUnits: { [key: string]: string };
+  dropdownUnits: string[];
   useSelector: boolean;
   nameValuePairs: string[][];
 };
