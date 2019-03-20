@@ -9,8 +9,8 @@ export const PodStatusChart: React.SFC<PodStatusChartProps> = (props) => {
   const {statusDescriptor, fetcher} = props;
   const donutFetcher = () => {
     const fetched = fetcher();
-    const values = Object.keys(fetched).map((key) => fetched[key].length);
-    const labels = Object.keys(fetched);
+    const values = fetched;
+    const labels = ["Available","Used"];
     return Promise.resolve([values, labels]);
   };
 

@@ -6,6 +6,9 @@ import { ColHead, DetailsPage, List, ListHeader, ListPage } from './factory';
 import { Kebab, navFactory, ResourceKebab, SectionHeading, ResourceLink, ResourceSummary, Selector, StatusIcon } from './utils';
 import { ResourceEventStream } from './events';
 
+import { Donut } from './graphs/donut';
+import { PodStatusChart , PodStatusChartProps } from './operator-lifecycle-manager/descriptors/status/pods';
+
 const pvcPhase = pvc => pvc.status.phase;
 
 const { common } = Kebab.factory;
@@ -44,21 +47,28 @@ const Details_ = ({flags, obj: pvc}) => {
   const storageClassName = _.get(pvc, 'spec.storageClassName');
   const volumeName = _.get(pvc, 'spec.volumeName');
   const requestedStorage = _.get(pvc, 'spec.resources.requests.storage');
-  const storage = _.get(pvc, 'status.capacity.storage');
+  const volumeMode = _.get(pvc, 'status.volumeMode');
   const accessModes = _.get(pvc, 'status.accessModes');
   return <div className="co-m-pane__body">
     <SectionHeading text="PersistentVolumeClaim Overview" />
     <div className="row">
-      <div className="col-sm-6">
+      <div className="col-sm-4">
         <ResourceSummary resource={pvc} showPodSelector={false} showNodeSelector={false}>
           <dt>Label Selector</dt>
           <dd><Selector selector={labelSelector} /></dd>
         </ResourceSummary>
       </div>
-      <div className="col-sm-6">
+      <div className="col-sm-4">
         <dl>
           <dt>Status</dt>
-          <dd><PVCStatus pvc={pvc} /></dd>
+          <dd> { volumeName ? <React.Fragment> <PVCStatus pvc={pvc} /> to <ResourceLink kind="PersistentVolume" name={volumeName} /> </React.Fragment> : <PVCStatus pvc={pvc} /> } </dd>
+          <dt>Requested</dt>
+          <dd>{requestedStorage || '-'}</dd>
+          <dt>Used</dt>
+          <dd>{'-'}</dd>
+          {!_.isEmpty(accessModes) && <React.Fragment><dt>Access Modes</dt><dd>{accessModes.join(', ')}</dd></React.Fragment>}
+          <dt>Volume Mode</dt>
+          <dd>{volumeMode ? {volumeMode} : 'Filesystem' }</dd>
           <dt>Storage Class</dt>
           <dd>
             {storageClassName ? <ResourceLink kind="StorageClass" name={storageClassName} /> : '-'}
@@ -66,11 +76,12 @@ const Details_ = ({flags, obj: pvc}) => {
           {volumeName && canListPV && <React.Fragment>
             <dt>Persistent Volume</dt>
             <dd><ResourceLink kind="PersistentVolume" name={volumeName} /></dd>
-          </React.Fragment>}
-          <dt>Requested</dt>
-          <dd>{requestedStorage || '-'}</dd>
-          {storage && <React.Fragment><dt>Size</dt><dd>{storage}</dd></React.Fragment>}
-          {!_.isEmpty(accessModes) && <React.Fragment><dt>Access Modes</dt><dd>{accessModes.join(', ')}</dd></React.Fragment>}
+          </React.Fragment>}       
+        </dl>
+      </div>
+      <div className="col-sm-4">
+        <dl>
+          <PodStatusChart fetcher={() => [1,2]} statusDescriptor='Test'/>
         </dl>
       </div>
     </div>

@@ -23,8 +23,8 @@ export class Donut extends SafetyFirst {
     this.resize = () => this.node && Plots.resize(this.node);
 
     this.layout = {
-      height: 150,
-      minWidth: 150,
+      height: 300,
+      minWidth: 300,
       overflow: 'hidden',
       margin: {
         l: 10,
